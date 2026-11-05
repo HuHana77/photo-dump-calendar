@@ -1,0 +1,13 @@
+interface:
+  display_name: Photo Dump Calendar
+  short_description: Turn photos into a calendar-style video
+  default_prompt: Make a photo dump calendar video from my images.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true
