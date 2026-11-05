@@ -1,4 +1,4 @@
-"""Render an eight-second photo-dump calendar from a JSON manifest."""
+"""Render a photo-dump calendar MP4 and a double-speed GIF."""
 import argparse
 import calendar
 import json
@@ -14,6 +14,9 @@ PREFERRED = [3, 12, 20, 22, 24, 7, 6, 16, 33, 9, 28, 1, 18, 26, 31]
 
 
 def render(manifest, output):
+    gif_output = output.with_suffix(".gif")
+    if gif_output == output:
+        raise ValueError("Use an MP4 output path so the video and GIF have different paths.")
     config = json.loads(manifest.read_text(encoding="utf-8"))
     config.setdefault("audio", str(Path(__file__).resolve().parents[1] /
                                    "assets" / "Reference_Piano_Left_Hand.wav"))
@@ -115,8 +118,23 @@ def render(manifest, output):
             encoder.stdin.close()
             if encoder.wait():
                 raise RuntimeError("FFmpeg could not encode the calendar video.")
+        staged_gif = Path(work) / "calendar.gif"
+        gif_filter = (
+            "setpts=0.5*(PTS-STARTPTS),fps=20,scale=540:960:flags=lanczos,"
+            "split[frames][colors];[colors]palettegen=stats_mode=diff[palette];"
+            "[frames][palette]paletteuse=dither=sierra2_4a"
+        )
+        subprocess.run(
+            ["ffmpeg", "-v", "error", "-y", "-i", str(staged),
+             "-filter_complex_threads", "1", "-filter_complex", gif_filter,
+             "-loop", "0", str(staged_gif)],
+            check=True, timeout=120,
+        )
         staged.replace(output)
-    print(json.dumps({**config, "photos": layout}, ensure_ascii=False))
+        staged_gif.replace(gif_output)
+    print(json.dumps({**config, "photos": layout,
+                      "outputs": {"video": str(output), "gif": str(gif_output)}},
+                     ensure_ascii=False))
 
 
 if __name__ == "__main__":
