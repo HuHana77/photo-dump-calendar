@@ -15,6 +15,8 @@ PREFERRED = [3, 12, 20, 22, 24, 7, 6, 16, 33, 9, 28, 1, 18, 26, 31]
 
 def render(manifest, output):
     config = json.loads(manifest.read_text(encoding="utf-8"))
+    config.setdefault("audio", str(Path(__file__).resolve().parents[1] /
+                                   "assets" / "Reference_Piano_Left_Hand.wav"))
     weeks = calendar.monthcalendar(config["year"], config["month"])
     dates = {day: row * 7 + col for row, week in enumerate(weeks)
              for col, day in enumerate(week) if day}

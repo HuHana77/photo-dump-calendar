@@ -9,7 +9,9 @@ If no photos are available, ask the user to upload a background and at least one
 
 Use the marked background or the first photo in attachment order. Include every other photo. Use the supplied month/year, infer the month from the title if possible, and default to the current year. If no month or title is supplied, use the current month and an English title such as October dump. Treat default photo placements as visual choices. Assign a date only when the user specifies it. Reuse prior placements and timings for revisions where possible.
 
-Run the bundled renderer with Python 3, Pillow 10.1+ and FFmpeg with libx264. Use available local copies of the uploads. Check dependencies before rendering and obtain missing ones using the environment's supported workflow. Use the soundtrack the user explicitly requests first. Otherwise reuse an audio file or reference video the user previously designated as their default soundtrack if it is accessible. Set `audio` to the local path of that file. If no soundtrack is available, ask the user to upload one or choose silence. Set `audio` to null only for a silent export. If an expected soundtrack cannot be read or has no audio stream, ask for a replacement.
+Run the bundled renderer with Python 3, Pillow 10.1+ and FFmpeg with libx264. Use available local copies of the uploads. Check dependencies before rendering and obtain missing ones using the environment's supported workflow.
+
+Use the soundtrack the user explicitly requests first. Otherwise reuse an accessible audio file or reference video the user previously designated as their default soundtrack. Set `audio` to the local path of that file. When the user has supplied no soundtrack, omit `audio` to use the bundled `assets/Reference_Piano_Left_Hand.wav` automatically. This asset is resolved relative to the installed skill, independently of the manifest location. Set `audio` to null only when the user requests silence. If a user-specified soundtrack cannot be read or has no audio stream, ask for a replacement.
 
 Run `python scripts/render.py manifest.json output.mp4` with paths to the script, manifest and output in the current environment. The manifest uses absolute or manifest-relative paths:
 
@@ -19,8 +21,7 @@ Run `python scripts/render.py manifest.json output.mp4` with paths to the script
   "title": "October dump",
   "year": 2026,
   "month": 10,
-  "photos": ["first.jpg", {"path": "second.jpg", "day": 15, "center": [0.5, 0.3]}],
-  "audio": null
+  "photos": ["first.jpg", {"path": "second.jpg", "day": 15, "center": [0.5, 0.3]}]
 }
 ```
 
