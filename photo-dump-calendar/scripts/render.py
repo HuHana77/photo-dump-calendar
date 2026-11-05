@@ -79,9 +79,12 @@ def render(manifest, output):
         layout.append({**photo, "slot": slot, "start": start, "end": end})
 
     cmd = ["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24",
-           "-s", f"{WIDTH}x{HEIGHT}", "-r", str(FPS), "-i", "-", "-map", "0:v:0"]
+           "-s", f"{WIDTH}x{HEIGHT}", "-r", str(FPS), "-i", "-"]
     if config.get("audio"):
-        cmd += ["-i", str(manifest.parent / config["audio"]), "-map", "1:a:0",
+        cmd += ["-i", str(manifest.parent / config["audio"])]
+    cmd += ["-map", "0:v:0"]
+    if config.get("audio"):
+        cmd += ["-map", "1:a:0",
                 "-c:a", "aac", "-b:a", "192k", "-t", str(FRAMES / FPS)]
     cmd += ["-c:v", "libx264", "-threads", "4", "-preset", "fast", "-crf", "18",
             "-pix_fmt", "yuv420p", "-movflags", "+faststart"]
